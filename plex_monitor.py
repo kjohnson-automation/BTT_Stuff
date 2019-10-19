@@ -5,8 +5,8 @@ import sys
 import time
 import datetime
 
-FIFTEEN = 900
-HALF_HOUR = 1800
+OFTEN = 60
+NOT_SO_OFTEN = 900
 HOUR = 3600
 
 def main():
@@ -36,11 +36,11 @@ def wait_check():
 	""" Depending on what time it is, it'll timeout between queries """
 	current_hour = datetime.datetime.now().hour
 	if current_hour < 16:
-		print("Checking again in 30 minutes.")
-		time.sleep(HALF_HOUR)
+		print("Checking again in {0} minutes.".format(NOT_SO_OFTEN/60))
+		time.sleep(NOT_SO_OFTEN)
 	elif current_hour >= 16:
-		print("Checking again in 15 minutes.")
-		time.sleep(FIFTEEN)
+		print("Checking again in {0} minute/s.".format(OFTEN/60))
+		time.sleep(OFTEN)
 
 def check_plex():
 	""" Just combines get_tasklist and plex_search to reduce code """
