@@ -13,6 +13,7 @@ VPN_ON = False
 
 def main():
     # initial check
+    global VPN_ON
     VPN_ON = False
     running = check_plex()
     while not running:
@@ -39,7 +40,8 @@ def wait_check():
     """ Depending on what time it is, it'll timeout between queries """
     global VPN_ON
     current_hour = datetime.datetime.now().hour
-    if 2 < current_hour < 16:
+    current_day = datetime.datetime.now().weekday()
+    if (2 < current_hour < 16) and (current_day not in [5, 6]):
         if not VPN_ON:
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-c"])
             VPN_ON = True
@@ -48,7 +50,8 @@ def wait_check():
 
     else:
     # elif current_hour >= 16:
-        if VPN_ON:
+        current_day = datetime.datetime.now().weekday()
+        if VPN_ON or (current_day in [5, 6]):
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-d"])
             VPN_ON = False
         print("Checking again in {0} minute/s.".format(OFTEN/60))
