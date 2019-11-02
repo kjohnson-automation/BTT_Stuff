@@ -19,8 +19,8 @@ class Plex_Handler():
         try:
             self.plex = PlexServer(baseurl, token)
             movie_continue = True
-        except ConnectionError as e:
-            print("No Connection")
+        except ConnectionError:
+            print("Down")
             movie_continue = False
         if movie_continue:
             self.get_avail_movies()
