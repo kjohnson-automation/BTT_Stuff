@@ -41,6 +41,7 @@ def wait_check():
     global VPN_ON
     current_hour = datetime.datetime.now().hour
     current_day = datetime.datetime.now().weekday()
+    # Checks to see if its between 2AM and 4PM During the Week, if so VPN is enabled.
     if (2 < current_hour < 16) and (current_day not in [5, 6]):
         if not VPN_ON:
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-c"])
