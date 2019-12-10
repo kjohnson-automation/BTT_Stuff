@@ -5,15 +5,20 @@ import sys
 import time
 import datetime
 import subprocess
+import re
 
 OFTEN = 60
 NOT_SO_OFTEN = 900
 HOUR = 3600
 VPN_ON = False
+OMBI_ON = False
 
 def main():
     # initial check
     global VPN_ON
+    global OMBI_ON
+    tasklist = get_tasklist()
+    OMBI_ON = ombi_search(tasklist)[0]
     VPN_ON = False
     running = check_plex()
     while not running:
@@ -39,21 +44,28 @@ def start_plex():
 def wait_check():
     """ Depending on what time it is, it'll timeout between queries """
     global VPN_ON
+    global OMBI_ON
     current_hour = datetime.datetime.now().hour
     current_day = datetime.datetime.now().weekday()
     if (2 < current_hour < 16) and (current_day not in [5, 6]):
         if not VPN_ON:
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-c"])
             VPN_ON = True
+        if OMBI_ON:
+            toggle_ombi(0) 
         print("Checking again in {0} minutes.".format(NOT_SO_OFTEN/60))
         time.sleep(NOT_SO_OFTEN)
 
     else:
+        tasklist = get_tasklist()
+        OMBI_ON = ombi_search(tasklist)[0]
     # elif current_hour >= 16:
         current_day = datetime.datetime.now().weekday()
         if VPN_ON or (current_day in [5, 6]):
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-d"])
             VPN_ON = False
+        if not OMBI_ON:
+            toggle_ombi(1)
         print("Checking again in {0} minute/s.".format(OFTEN/60))
         time.sleep(OFTEN)
 
@@ -75,6 +87,24 @@ def plex_search(tasklist):
             running = True
             break
     return running
+
+def ombi_search(tasklist):
+    """ Searches tasklist for ombi and starts if its not running """
+    running = False
+    pid_regex = r".+\.exe\s+([0-9]+)\s+\w+"
+    pid = "N/A"
+    for row in tasklist:
+        if "Ombi.exe" in row:
+            pid = re.findall(pid_regex, row)
+    return [running, pid]
+
+def toggle_ombi(toggle:bool):
+    """ Turns off or on ombi """
+    tasklist = get_tasklist
+    [ombi_on, pid] = ombi_search(tasklist)
+    if not ombi_on and toggle:
+        os.popen("C:\\Users\\basil\\ombi\\Ombi.exe")
+
 
 
 if __name__ == '__main__':
