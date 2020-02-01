@@ -63,19 +63,34 @@ def check_plex():
     tasklist = get_tasklist()
     return plex_search(tasklist)
 
+def check_ombi():
+    tasklist = get_tasklist()
+    return ombi_search(tasklist)
+
 def get_tasklist():
     """ Used to retrieve and parse tasklist to monitor """
     return os.popen("tasklist").read().split("\n")
 
 def plex_search(tasklist):
     """ Used to search the tasklist for "Plex Media Server.exe" """
-    running = False
-    for row in tasklist:
-        if "Plex Media Server.exe" in row:
-            print("Plex is running: {0}".format(datetime.datetime.now()))
-            running = True
-            break
-    return running
+    # running = False
+    # for row in tasklist:
+    #     if "Plex Media Server.exe" in row:
+    #         print("Plex is running: {0}".format(datetime.datetime.now()))
+    #         running = True
+    #         break
+    # return running
+    # Refactor:
+    return any(["Plex Media Server.exe" in row for row in tasklist])
+
+def ombi_search(tasklist):
+    """ Used to search tasklist for "Ombi.exe" """
+    return any(["Ombi.exe" in row for row in tasklist])
+
+def generic_tasklist_serach(search_str, tasklisk):
+    """ Searches the tasklisk for <search_string> """
+    return any([seach_str in row for row in tasklist])
+
 
 
 if __name__ == '__main__':
