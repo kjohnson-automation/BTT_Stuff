@@ -12,11 +12,13 @@ NOT_SO_OFTEN = 900
 HOUR = 3600
 VPN_ON = False
 OMBI_ON = False
+OMBI_CHECK = False
 
 def main():
     # initial check
     global VPN_ON
     global OMBI_ON
+    global OMBI_CHECK
     tasklist = get_tasklist()
     OMBI_ON = ombi_search(tasklist)[0]
     VPN_ON = False
@@ -52,7 +54,7 @@ def wait_check():
         if not VPN_ON:
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-c"])
             VPN_ON = True
-        if OMBI_ON:
+        if OMBI_ON and OMBI_CHECK:
             toggle_ombi(0) 
         print("Checking again in {0} minutes.".format(NOT_SO_OFTEN/60))
         time.sleep(NOT_SO_OFTEN)
@@ -65,7 +67,7 @@ def wait_check():
         if VPN_ON or (current_day in [5, 6]):
             subprocess.run(["C:\\Program Files (x86)\\NordVPN\\nordvpn", "-d"])
             VPN_ON = False
-        if not OMBI_ON:
+        if not OMBI_ON and OMBI_CHECK:
             toggle_ombi(1)
         print("Checking again in {0} minute/s.".format(OFTEN/60))
         time.sleep(OFTEN)
@@ -95,14 +97,9 @@ def plex_search(tasklist):
     # Refactor:
     return any(["Plex Media Server.exe" in row for row in tasklist])
 
-def ombi_search(tasklist):
-    """ Used to search tasklist for "Ombi.exe" """
-    return any(["Ombi.exe" in row for row in tasklist])
-
-def generic_tasklist_serach(search_str, tasklisk):
+def generic_tasklist_serach(search_str, tasklist):
     """ Searches the tasklisk for <search_string> """
-    return any([seach_str in row for row in tasklist])
-
+    return any([search_str in row for row in tasklist])
 
 def ombi_search(tasklist):
     """ Searches tasklist for ombi and starts if its not running """
@@ -120,7 +117,13 @@ def toggle_ombi(toggle:bool):
     [ombi_on, pid] = ombi_search(tasklist)
     if not ombi_on and toggle:
         os.popen("C:\\Users\\basil\\ombi\\Ombi.exe")
-
+        return 0
+    elif ombi_on and not toggle:
+        print("Killing Ombi")
+        # TODO: implement kill ombi
+        return 1
+    # returns -1 for no activity
+    return -1
 
 
 if __name__ == '__main__':
