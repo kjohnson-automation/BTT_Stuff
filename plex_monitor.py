@@ -56,7 +56,7 @@ def wait_check():
             VPN_ON = True
         if OMBI_ON and OMBI_CHECK:
             toggle_ombi(0) 
-        print("Checking again in {0} minutes.".format(NOT_SO_OFTEN/60))
+        print("{0}: Checking again in {1} minutes.".format(datetime.datetime.now(), NOT_SO_OFTEN/60))
         time.sleep(NOT_SO_OFTEN)
 
     else:
