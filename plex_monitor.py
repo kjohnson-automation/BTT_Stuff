@@ -26,13 +26,13 @@ def main():
     while not running:
         start_plex()
         time.sleep(60)
-        print("Plex Started: {0}".format(datetime.datetime.now()))
+        print("{0}: \n\t****Plex Started****\n".format(datetime.datetime.now()))
     while True:
         try:
             wait_check()
             running = check_plex()
             if not running:
-                print("Plex found not running: {0}".format(datetime.datetime.now()))
+                print("{0}: \n\t****Plex found not running****\n".format(datetime.datetime.now()))
                 start_plex()
         except KeyboardInterrupt:
             print("Exiting Monitor - plex is no longer being monitored.")
@@ -69,7 +69,7 @@ def wait_check():
             VPN_ON = False
         if not OMBI_ON and OMBI_CHECK:
             toggle_ombi(1)
-        print("Checking again in {0} minute/s.".format(OFTEN/60))
+        print("{0}: Checking again in {1} minute/s.".format(datetime.datetime.now(), OFTEN/60))
         time.sleep(OFTEN)
 
 def check_plex():
